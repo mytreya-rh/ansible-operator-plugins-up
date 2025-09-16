@@ -13,7 +13,6 @@ RUN rustc --version
 COPY images/ansible-operator/Pipfile* ./
 # Copy our local ansible-runner-http replacement module
 COPY images/ansible-operator/ansible_runner_http ./ansible_runner_http
-COPY images/ansible-operator/setup.py ./setup.py
 # Instruct pip(env) not to keep a cache of installed packages,
 # to install into the global site-packages and
 # to clear the pipenv cache as well
@@ -30,7 +29,7 @@ RUN set -e && dnf clean all && rm -rf /var/cache/dnf/* \
   && pip3 install --upgrade pip~=23.3.2 \
   && pip3 install pipenv==2023.11.15 \
   && pipenv install --deploy \
-  && pip3 install . \
+  && pip3 install ansible_runner_http/ \
   && pipenv check \
   && dnf remove -y gcc libffi-devel openssl-devel python3.12-devel \
   && dnf clean all \
