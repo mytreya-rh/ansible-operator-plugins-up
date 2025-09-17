@@ -119,6 +119,12 @@ var _ = Describe("Running ansible projects", func() {
 			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("failed=1"), "manager logs: %s", managerContainerLogs())
 			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("[Gathering Facts]"), "manager logs: %s", managerContainerLogs())
 
+			By("dumping manager container logs for ansible events verification")
+			logOutput := managerContainerLogs()
+			fmt.Printf("\n=== MANAGER CONTAINER LOGS START ===\n")
+			fmt.Printf("%s\n", logOutput)
+			fmt.Printf("=== MANAGER CONTAINER LOGS END ===\n\n")
+
 			By("ensuring no liveness probe fail events")
 			verifyControllerProbe := func() string {
 				By("getting the controller-manager events")
@@ -211,6 +217,12 @@ var _ = Describe("Running ansible projects", func() {
 				ContainSubstring("Ansible-runner exited successfully"))
 			Eventually(managerContainerLogs, time.Minute, time.Second).ShouldNot(ContainSubstring("failed=1"))
 
+			By("dumping manager container logs after CR update for ansible events verification")
+			logOutputAfterUpdate := managerContainerLogsAfterUpdateCR()
+			fmt.Printf("\n=== MANAGER CONTAINER LOGS AFTER UPDATE START ===\n")
+			fmt.Printf("%s\n", logOutputAfterUpdate)
+			fmt.Printf("=== MANAGER CONTAINER LOGS AFTER UPDATE END ===\n\n")
+
 			By("checking Deployment replicas spec is equals 2")
 			verifyMemcachedPatch := func() error {
 				replicas, err := kctl.Get(
@@ -291,6 +303,12 @@ var _ = Describe("Running ansible projects", func() {
 			Eventually(managerContainerLogsAfterDeleteCR, time.Minute, time.Second).Should(ContainSubstring(
 				"Ansible-runner exited successfully"))
 			Eventually(managerContainerLogsAfterDeleteCR).ShouldNot(ContainSubstring("error"))
+
+			By("dumping manager container logs after CR deletion for ansible events verification")
+			logOutputAfterDelete := managerContainerLogsAfterDeleteCR()
+			fmt.Printf("\n=== MANAGER CONTAINER LOGS AFTER DELETE START ===\n")
+			fmt.Printf("%s\n", logOutputAfterDelete)
+			fmt.Printf("=== MANAGER CONTAINER LOGS AFTER DELETE END ===\n\n")
 
 			By("ensuring that Memchaced Deployment was removed")
 			getMemcachedDeployment := func() error {
